@@ -16,6 +16,9 @@ Source0:	https://github.com/firnsy/barnyard2/tarball/v2-%{version}-%{subver}/%{n
 Source2:	%{name}.config
 Source3:	%{name}
 URL:		https://github.com/firnsy/barnyard2
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool
 %{?with_mysql:BuildRequires:		mysql-devel}
 %{?with_postgresql:BuildRequires:	postgresql-devel}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -38,7 +41,11 @@ will resume processing at the last entry as listed in the waldo file.
 mv firnsy-%{name}-*/* .
 
 %build
-./autogen.sh
+%{__aclocal} -I m4
+%{__libtoolize}
+%{__autoconf}
+%{__autoheader}
+%{__automake} --force-missing
 %configure \
 	--sysconfdir=%{_sysconfdir}/snort \
 	%{?with_postgresql:--with-postgresql} \
@@ -52,14 +59,10 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-install -d -p $RPM_BUILD_ROOT/etc/{sysconfig,rc.d/init.d}
-install -d -p $RPM_BUILD_ROOT%{_sysconfdir}/snort
-install -d -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/{doc,contrib}
-install -d -p $RPM_BUILD_ROOT%{_mandir}/man8
+install -d $RPM_BUILD_ROOT{/etc/{sysconfig,rc.d/init.d},%{_sysconfdir}/snort}
 cp -p etc/barnyard2.conf $RPM_BUILD_ROOT%{_sysconfdir}/snort
 cp -p %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/barnyard2
 install -p %{SOURCE3} $RPM_BUILD_ROOT/etc/rc.d/init.d/barnyard2
-cp -p doc/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/doc
 
 %clean
 rm -rf $RPM_BUILD_ROOT
