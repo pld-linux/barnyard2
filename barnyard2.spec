@@ -1,7 +1,7 @@
-
+#
 # Conditional build:
-%bcond_without  mysql		# don't build support for MySQL
-%bcond_without	postgresql	# don't build support for PostgreSQL
+%bcond_without  mysql	# MySQL support
+%bcond_without	pgsql	# PostgreSQL support
 
 %define		subver	beta2
 %define		rel		1
@@ -19,8 +19,8 @@ URL:		https://github.com/firnsy/barnyard2
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	libtool
-%{?with_mysql:BuildRequires:		mysql-devel}
-%{?with_postgresql:BuildRequires:	postgresql-devel}
+%{?with_mysql:BuildRequires:	mysql-devel}
+%{?with_pgsql:BuildRequires:	postgresql-devel}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -33,8 +33,8 @@ file (or waldo file in the snort world) to track where it is. In the
 event the barnyard process ends while a waldo file is in use, barnyard
 will resume processing at the last entry as listed in the waldo file.
 
-%{?with_mysql:barnyard2 binary compiled with mysql support.}
-%{?with_postgresql:barnyard2 binary compiled with postgresql support.}
+%{?with_mysql:barnyard2 binary compiled with MySQL support.}
+%{?with_pgsql:barnyard2 binary compiled with PostgreSQL support.}
 
 %prep
 %setup -qc
@@ -48,7 +48,7 @@ mv firnsy-%{name}-*/* .
 %{__automake} --force-missing
 %configure \
 	--sysconfdir=%{_sysconfdir}/snort \
-	%{?with_postgresql:--with-postgresql} \
+	%{?with_pgsql:--with-postgresql} \
 	%{?with_mysql:--with-mysql-libraries=%{_libdir}} \
 
 %{__make}
